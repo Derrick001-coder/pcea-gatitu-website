@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Reset Password</title>
+<style>
+body{font-family:Segoe UI,Arial;padding:20px;background:#f5f7fa}
+.container{max-width:520px;margin:40px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.btn{display:inline-block;padding:10px 16px;border-radius:6px;border:none;cursor:pointer}
+.btn-primary{background:#4a6fa5;color:#fff}
+.alert{padding:12px;border-radius:6px;margin-bottom:12px}
+.alert-success{background:#d4edda;color:#155724}
+.alert-error{background:#f8d7da;color:#721c24}
+</style></head><body>
+<div class="container">
+<h2>Reset Your Password</h2>
+<div id="status"></div>
+<form id="resetForm" style="display:none">
+<div class="form-group"><label>New Password</label><input id="newPass" type="password" style="width:100%;padding:8px;margin:6px 0;border:1px solid #ddd;border-radius:4px"></div>
+<div class="form-group"><label>Confirm Password</label><input id="confirmPass" type="password" style="width:100%;padding:8px;margin:6px 0;border:1px solid #ddd;border-radius:4px"></div>
+<button class="btn btn-primary" type="submit">Set New Password</button>
+</form>
+</div>
+<script>
+function el(id){return document.getElementById(id);}
+const params = new URLSearchParams(location.search);
+const token = params.get('token');
+const email = params.get('email');
+const status = el('status');
+if(!token||!email){status.innerHTML='<div class="alert alert-error">Invalid reset link.</div>'; throw 0;}
+const tokens = JSON.parse(localStorage.getItem('pcea_resetTokens')||'[]');
+const t = tokens.find(x=>x.token===token && x.email===email && !x.used);
+// expired if older than 24h
+if(!t){status.innerHTML='<div class="alert alert-error">This reset link is invalid or has already been used.</div>'; throw 0;}
+const created = new Date(t.created); if((Date.now()-created.getTime())>24*3600*1000){status.innerHTML='<div class="alert alert-error">Reset link expired.</div>'; throw 0;}
+el('resetForm').style.display='block';
+el('resetForm').addEventListener('submit',function(e){e.preventDefault();
+const p1=el('newPass').value.trim(); const p2=el('confirmPass').value.trim();
+if(!p1||p1!==p2){status.innerHTML='<div class="alert alert-error">Passwords do not match.</div>'; return;}
+let users = JSON.parse(localStorage.getItem('pcea_users')||'[]');
+const idx = users.findIndex(u=>u.email===email); if(idx===-1){status.innerHTML='<div class="alert alert-error">User not found.</div>'; return;}
+users[idx].password = p1; localStorage.setItem('pcea_users', JSON.stringify(users));
+// mark token used
+const toks = JSON.parse(localStorage.getItem('pcea_resetTokens')||'[]');
+for(let i=0;i<toks.length;i++){ if(toks[i].token===token){ toks[i].used=true; break; } }
+localStorage.setItem('pcea_resetTokens', JSON.stringify(toks));
+status.innerHTML='<div class="alert alert-success">Password updated successfully. You can now login.</div>';
+el('resetForm').style.display='none';
+});
+</script></body></html>

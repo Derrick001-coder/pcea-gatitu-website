@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - PCEA Gatitu Church</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #6b8cbc;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --sidebar-width: 250px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .church-theme {
+            text-align: center;
+            font-style: italic;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--accent);
+        }
+        
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .admin-header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Admin Sections */
+        .admin-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--primary);
+            position: sticky;
+            top: 0;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-btn {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 15px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: #e9ecef;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 150px;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-actions {
+            opacity: 1;
+        }
+        
+        /* Back to Main Site */
+        .back-to-site {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* Activity List */
+        .activity-list {
+            margin-top: 20px;
+        }
+        
+        .activity-item {
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-header h2, .menu-item span {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                padding: 15px;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .admin-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <h2 class="login-title">Admin Login</h2>
+            <div class="church-theme">PCEA Gatitu Church - "Growing in Faith, Serving in Love"</div>
+            <div id="loginAlerts"></div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminEmail">Email Address</label>
+                    <input type="email" id="adminEmail" class="form-control" required value="admin@pceagatitu.org">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" class="form-control" required value="admin123">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Login to Admin Panel
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="complete.html" class="btn btn-outline" style="width: 100%;">
+                    <i class="fas fa-arrow-left"></i> Back to Main Site
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden until login) -->
+    <div id="adminPanel" style="display: none; width: 100%;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>PCEA Gatitu Admin</h2>
+                <p>Church Management System</p>
+            </div>
+            <div class="sidebar-menu">
+                <a class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a class="menu-item" data-section="announcements">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Announcements</span>
+                </a>
+                <a class="menu-item" data-section="activities">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Activities</span>
+                </a>
+                <a class="menu-item" data-section="gallery">
+                    <i class="fas fa-images"></i>
+                    <span>Photo Gallery</span>
+                </a>
+                <a class="menu-item" data-section="blog">
+                    <i class="fas fa-blog"></i>
+                    <span>Blog Management</span>
+                </a>
+                <a class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a class="menu-item" data-section="finances">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Finances</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="admin-header">
+                <h1>Admin Dashboard - PCEA Gatitu Church</h1>
+                <div class="admin-actions">
+                    <button class="btn btn-outline" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                    <a href="complete.html" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> View Main Site
+                    </a>
+                    <button class="btn btn-danger" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="admin-section active" id="dashboard">
+                <h2 class="section-title">Dashboard Overview</h2>
+                <div class="church-theme" style="text-align: left; margin-bottom: 20px;">"Growing in Faith, Serving in Love"</div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-title">Total Members</div>
+                        <div class="card-value" id="totalMembers">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="card-title">Active Announcements</div>
+                        <div class="card-value" id="activeAnnouncements">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="card-title">Gallery Photos</div>
+                        <div class="card-value" id="galleryPhotos">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="card-title">Chat Messages</div>
+                        <div class="card-value" id="chatMessagesCount">0</div>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <h3>Recent Activity</h3>
+                    <small>Last 7 days</small>
+                </div>
+                <div class="activity-list" id="recentActivity">
+                    <!-- Recent activity will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Announcements Management -->
+            <div class="admin-section" id="announcements">
+                <div class="section-header">
+                    <h2 class="section-title">Manage Announcements</h2>
+                    <button class="btn btn-success" id="addAnnouncementBtn">
+                        <i class="fas fa-plus"></i> Add New Announcement
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Author</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="announcementsTable">
+                            <!-- Announcements will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-container" style="display: none; margin-top: 20px;" id="announcementForm">
+                    <h3>Add New Announcement</h3>
+                    <form id="newAnnouncementForm">
+                        <div class="form-group">
+                            <label for="announcementTitle">Title</label>
+                            <input type="text" id="announcementTitle" class="form-control" required placeholder="Enter announcement title">
+                        </div>
+                        <div class="form-group">
+                            <label for="announcementContent">Content</label>
+                            <textarea id="announcementContent" class="form-control" required placeholder="Enter announcement content"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Publish Announcement
+                            </button>
+                            <button type="button" class="btn btn-outline" id="cancelAnnouncementBtn">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Activities Management -->
+            <div class="admin-section" id="activities">
+                <div class="section-header">
+                    <h2 class="section-title">Manage Activities</h2>
+                    <button class="btn btn-success" id="addActivityBtn">
+                        <i class="fas fa-plus"></i> Add New Activity
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activitiesTable">
+                            <!-- Activities will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-container" style="display: none; margin-top: 20px;" id="activityForm">
+                    <h3>Add New Activity</h3>
+                    <form id="newActivityForm">
+                        <div class="form-group">
+                            <label for="activityTitle">Title</label>
+                            <input type="text" id="activityTitle" class="form-control" required placeholder="Enter activity title">
+                        </div>
+                        <div class="form-group">
+                            <label for="activityDescription">Description</label>
+                            <textarea id="activityDescription" class="form-control" required placeholder="Enter activity description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="activityType">Type</label>
+                            <select id="activityType" class="form-control" required>
+                                <option value="">Select activity type</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="activityDate">Date</label>
+                            <input type="date" id="activityDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-calendar-plus"></i> Add Activity
+                            </button>
+                            <button type="button" class="btn btn-outline" id="cancelActivityBtn">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Blog Management -->
+            <div class="admin-section" id="blog">
+                <div class="section-header">
+                    <h2 class="section-title">Manage Blog Posts</h2>
+                    <button class="btn btn-success" id="addBlogPostBtn">
+                        <i class="fas fa-plus"></i> Add New Post
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                                <th>Comments</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blogTable">
+                            <!-- Blog posts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-container" style="display: none; margin-top: 20px;" id="blogForm">
+                    <h3>Add New Blog Post</h3>
+                    <form id="newBlogForm">
+                        <div class="form-group">
+                            <label for="blogTitle">Title</label>
+                            <input type="text" id="blogTitle" class="form-control" required placeholder="Enter blog post title">
+                        </div>
+                        <div class="form-group">
+                            <label for="blogAuthor">Author</label>
+                            <input type="text" id="blogAuthor" class="form-control" required value="Admin">
+                        </div>
+                        <div class="form-group">
+                            <label for="blogContent">Content</label>
+                            <textarea id="blogContent" class="form-control" required rows="6" placeholder="Write your blog post content here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Publish Post
+                            </button>
+                            <button type="button" class="btn btn-outline" id="cancelBlogBtn">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="admin-section" id="users">
+                <div class="section-header">
+                    <h2 class="section-title">User Management</h2>
+                    <div class="admin-actions">
+                        <button class="btn btn-outline" id="exportUsersBtn">
+                            <i class="fas fa-download"></i> Export Users
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Registration Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Finances Management -->
+            <div class="admin-section" id="finances">
+                <div class="section-header">
+                    <h2 class="section-title">Financial Management</h2>
+                    <button class="btn btn-success" id="updateFinancesBtn">
+                        <i class="fas fa-edit"></i> Update Finances
+                    </button>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="card-title">Total Offering</div>
+                        <div class="card-value" id="offeringAmount">KSh 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="card-title">Total Donations</div>
+                        <div class="card-value" id="donationsAmount">KSh 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="card-title">Expenses</div>
+                        <div class="card-value" id="expensesAmount">KSh 0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="card-title">Available Funds</div>
+                        <div class="card-value" id="availableFunds">KSh 0</div>
+                    </div>
+                </div>
+                
+                <div class="form-container" style="margin-top: 20px;" id="financeForm">
+                    <h3>Update Financial Records</h3>
+                    <form id="updateFinanceForm">
+                        <div class="form-group">
+                            <label for="offeringUpdate">Offering Amount (KSh)</label>
+                            <input type="number" id="offeringUpdate" class="form-control" required min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="donationsUpdate">Donations Amount (KSh)</label>
+                            <input type="number" id="donationsUpdate" class="form-control" required min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="expensesUpdate">Expenses Amount (KSh)</label>
+                            <input type="number" id="expensesUpdate" class="form-control" required min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Finances
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Photo Gallery Management -->
+            <div class="admin-section" id="gallery">
+                <div class="section-header">
+                    <h2 class="section-title">Manage Photo Gallery</h2>
+                    <div>
+                        <button class="btn btn-success" id="uploadChurchPhotosBtn">
+                            <i class="fas fa-upload"></i> Upload Church Photos
+                        </button>
+                        <button class="btn btn-primary" id="uploadTripPhotosBtn">
+                            <i class="fas fa-upload"></i> Upload Trip Photos
+                        </button>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px; color: var(--primary);">Church Photos</h3>
+                <div class="gallery-grid" id="churchGalleryAdmin">
+                    <!-- Church photos will be loaded here -->
+                </div>
+                
+                <h3 style="margin: 20px 0 10px; color: var(--primary);">Trips & Retreats</h3>
+                <div class="gallery-grid" id="tripsGalleryAdmin">
+                    <!-- Trip photos will be loaded here -->
+                </div>
+                
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea" style="display: none;">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p>Click to upload photos or drag and drop</p>
+                    <p class="small" style="font-size: 0.8rem; margin-top: 10px; color: #6c757d;">
+                        Supported formats: JPG, PNG, GIF. Max file size: 5MB
+                    </p>
+                    <input type="file" id="fileInput" multiple style="display: none;" accept="image/*">
+                </div>
+            </div>
+
+            <!-- Back to Main Site -->
+            <div class="back-to-site">
+                <a href="complete.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Main Website
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin credentials
+        const ADMIN_EMAIL = 'admin@pceagatitu.org';
+        const ADMIN_PASSWORD = 'admin123';
+        
+        // Data storage
+        let users = [];
+        let announcements = [];
+        let activities = [];
+        let blogPosts = [];
+        let chatMessages = [];
+        let churchPhotos = [];
+        let tripPhotos = [];
+        let finances = {};
+        
+        // Check if admin is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const isAdminLoggedIn = localStorage.getItem('pcea_adminLoggedIn');
+            
+            if (isAdminLoggedIn) {
+                showAdminPanel();
+                loadAllData();
+                setupAdminPanel();
+            } else {
+                showLoginScreen();
+            }
+            
+            // Admin login form
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+                
+                if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                    localStorage.setItem('pcea_adminLoggedIn', 'true');
+                    showAdminPanel();
+                    loadAllData();
+                    setupAdminPanel();
+                    showAlert('loginAlerts', 'Admin login successful! Welcome to PCEA Gatitu Church Admin Panel.', 'success');
+                } else {
+                    showAlert('loginAlerts', 'Invalid admin credentials. Please try again.', 'error');
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('pcea_adminLoggedIn');
+                showLoginScreen();
+                showAlert('loginAlerts', 'You have been logged out successfully.', 'success');
+            });
+        });
+        
+        function loadAllData() {
+            users = JSON.parse(localStorage.getItem('pcea_users')) || [];
+            announcements = JSON.parse(localStorage.getItem('pcea_announcements')) || [];
+            activities = JSON.parse(localStorage.getItem('pcea_activities')) || [];
+            blogPosts = JSON.parse(localStorage.getItem('pcea_blogPosts')) || [];
+            chatMessages = JSON.parse(localStorage.getItem('pcea_chatMessages')) || [];
+            churchPhotos = JSON.parse(localStorage.getItem('pcea_churchPhotos')) || [];
+            tripPhotos = JSON.parse(localStorage.getItem('pcea_tripPhotos')) || [];
+            finances = JSON.parse(localStorage.getItem('pcea_finances')) || { offering: 0, donations: 0, expenses: 0 };
+        }
+        
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+        
+        function showAdminPanel() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+        
+        function setupAdminPanel() {
+            // Load initial data
+            loadDashboardData();
+            loadAnnouncementsTable();
+            loadActivitiesTable();
+            loadBlogTable();
+            loadUsersTable();
+            loadFinancialData();
+            loadGalleryPhotos();
+            
+            // Menu navigation
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = document.querySelectorAll('.admin-section');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // Update active menu item
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === sectionId) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadAllData();
+                loadDashboardData();
+                loadAnnouncementsTable();
+                loadActivitiesTable();
+                loadBlogTable();
+                loadUsersTable();
+                loadFinancialData();
+                loadGalleryPhotos();
+                showAlert('loginAlerts', 'Data refreshed successfully!', 'success');
+            });
+            
+            // Announcement management
+            setupAnnouncementManagement();
+            
+            // Activity management
+            setupActivityManagement();
+            
+            // Blog management
+            setupBlogManagement();
+            
+            // User management
+            setupUserManagement();
+            
+            // Financial management
+            setupFinancialManagement();
+            
+            // Photo upload functionality
+            setupPhotoUpload();
+        }
+        
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+            alert.innerHTML = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            // Auto-remove success alerts after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            }
+        }
+        
+        function loadDashboardData() {
+            // Update dashboard cards
+            document.getElementById('totalMembers').textContent = users.length;
+            document.getElementById('activeAnnouncements').textContent = announcements.length;
+            document.getElementById('galleryPhotos').textContent = churchPhotos.length + tripPhotos.length;
+            document.getElementById('chatMessagesCount').textContent = chatMessages.length;
+            
+            // Load recent activity
+            const recentActivity = document.getElementById('recentActivity');
+            recentActivity.innerHTML = '';
+            
+            // Get recent registrations (last 5)
+            const recentUsers = users
+                .sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate))
+                .slice(0, 5);
+            
+            if (recentUsers.length > 0) {
+                recentUsers.forEach(user => {
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div style="display: flex; justify-content: between; align-items: start;">
+                            <div style="flex: 1;">
+                                <strong>${user.name}</strong> registered on ${formatDate(user.registrationDate)}
+                                <br><small>Email: ${user.email} | Phone: ${user.phone}</small>
+                            </div>
+                            <div style="background: ${user.role === 'admin' ? 'var(--accent)' : 'var(--primary)'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;">
+                                ${user.role}
+                            </div>
+                        </div>
+                    `;
+                    recentActivity.appendChild(activityItem);
+                });
+            } else {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-users"></i>
+                    <h4>No users registered yet</h4>
+                    <p>User registrations will appear here</p>
+                `;
+                recentActivity.appendChild(emptyState);
+            }
+            
+            // Add recent announcements
+            const recentAnnouncements = announcements
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+            
+            if (recentAnnouncements.length > 0) {
+                const announcementsHeader = document.createElement('h4');
+                announcementsHeader.textContent = 'Recent Announcements';
+                announcementsHeader.style.marginTop = '20px';
+                announcementsHeader.style.marginBottom = '15px';
+                announcementsHeader.style.color = 'var(--primary)';
+                recentActivity.appendChild(announcementsHeader);
+                
+                recentAnnouncements.forEach(announcement => {
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.style.borderLeftColor = 'var(--success)';
+                    activityItem.innerHTML = `
+                        <strong>${announcement.title}</strong> - ${formatDate(announcement.date)}
+                        <br><small>By ${announcement.author}</small>
+                    `;
+                    recentActivity.appendChild(activityItem);
+                });
+            }
+        }
+        
+        function setupAnnouncementManagement() {
+            // Announcement form toggle
+            document.getElementById('addAnnouncementBtn').addEventListener('click', function() {
+                document.getElementById('announcementForm').style.display = 'block';
+                document.getElementById('announcementTitle').focus();
+            });
+            
+            document.getElementById('cancelAnnouncementBtn').addEventListener('click', function() {
+                document.getElementById('announcementForm').style.display = 'none';
+                document.getElementById('newAnnouncementForm').reset();
+            });
+            
+            // New announcement form submission
+            document.getElementById('newAnnouncementForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = document.getElementById('announcementTitle').value;
+                const content = document.getElementById('announcementContent').value;
+                
+                const newAnnouncement = {
+                    id: Date.now(),
+                    title: title,
+                    content: content,
+                    date: new Date().toISOString().split('T')[0],
+                    author: 'Admin'
+                };
+                
+                announcements.push(newAnnouncement);
+                localStorage.setItem('pcea_announcements', JSON.stringify(announcements));
+                
+                loadAnnouncementsTable();
+                loadDashboardData();
+                document.getElementById('announcementForm').style.display = 'none';
+                document.getElementById('newAnnouncementForm').reset();
+                
+                showAlert('loginAlerts', 'Announcement published successfully!', 'success');
+            });
+        }
+        
+        function loadAnnouncementsTable() {
+            const announcementsTable = document.getElementById('announcementsTable');
+            announcementsTable.innerHTML = '';
+            
+            if (announcements.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="4" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <i class="fas fa-bullhorn" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #dee2e6;"></i>
+                        <h4>No announcements yet</h4>
+                        <p>Create your first announcement to get started</p>
+                    </td>
+                `;
+                announcementsTable.appendChild(emptyRow);
+                return;
+            }
+            
+            announcements.forEach(announcement => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${announcement.title}</td>
+                    <td>${formatDate(announcement.date)}</td>
+                    <td>${announcement.author}</td>
+                    <td class="action-buttons">
+                        <button class="action-btn delete-btn" data-id="${announcement.id}" title="Delete announcement">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                announcementsTable.appendChild(row);
+            });
+            
+            // Add event listeners for action buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const announcement = announcements.find(a => a.id === id);
+                    
+                    if (confirm(`Are you sure you want to delete announcement: "${announcement.title}"?`)) {
+                        announcements = announcements.filter(a => a.id !== id);
+                        localStorage.setItem('pcea_announcements', JSON.stringify(announcements));
+                        loadAnnouncementsTable();
+                        loadDashboardData();
+                        showAlert('loginAlerts', 'Announcement deleted successfully!', 'success');
+                    }
+                });
+            });
+        }
+        
+        function setupActivityManagement() {
+            // Activity form toggle
+            document.getElementById('addActivityBtn').addEventListener('click', function() {
+                document.getElementById('activityForm').style.display = 'block';
+                document.getElementById('activityTitle').focus();
+            });
+            
+            document.getElementById('cancelActivityBtn').addEventListener('click', function() {
+                document.getElementById('activityForm').style.display = 'none';
+                document.getElementById('newActivityForm').reset();
+            });
+            
+            // New activity form submission
+            document.getElementById('newActivityForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = document.getElementById('activityTitle').value;
+                const description = document.getElementById('activityDescription').value;
+                const type = document.getElementById('activityType').value;
+                const date = document.getElementById('activityDate').value;
+                
+                const newActivity = {
+                    id: Date.now(),
+                    title: title,
+                    description: description,
+                    type: type,
+                    date: date
+                };
+                
+                activities.push(newActivity);
+                localStorage.setItem('pcea_activities', JSON.stringify(activities));
+                
+                loadActivitiesTable();
+                document.getElementById('activityForm').style.display = 'none';
+                document.getElementById('newActivityForm').reset();
+                
+                showAlert('loginAlerts', 'Activity added successfully!', 'success');
+            });
+        }
+        
+        function loadActivitiesTable() {
+            const activitiesTable = document.getElementById('activitiesTable');
+            activitiesTable.innerHTML = '';
+            
+            if (activities.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="4" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <i class="fas fa-calendar-alt" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #dee2e6;"></i>
+                        <h4>No activities yet</h4>
+                        <p>Add your first activity to get started</p>
+                    </td>
+                `;
+                activitiesTable.appendChild(emptyRow);
+                return;
+            }
+            
+            activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.title}</td>
+                    <td>
+                        <span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; 
+                            background: ${getActivityTypeColor(activity.type)}; color: white;">
+                            ${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
+                        </span>
+                    </td>
+                    <td>${formatDate(activity.date)}</td>
+                    <td class="action-buttons">
+                        <button class="action-btn delete-btn" data-id="${activity.id}" title="Delete activity">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                activitiesTable.appendChild(row);
+            });
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const activity = activities.find(a => a.id === id);
+                    
+                    if (confirm(`Are you sure you want to delete activity: "${activity.title}"?`)) {
+                        activities = activities.filter(a => a.id !== id);
+                        localStorage.setItem('pcea_activities', JSON.stringify(activities));
+                        loadActivitiesTable();
+                        showAlert('loginAlerts', 'Activity deleted successfully!', 'success');
+                    }
+                });
+            });
+        }
+        
+        function getActivityTypeColor(type) {
+            switch(type) {
+                case 'ongoing': return 'var(--info)';
+                case 'upcoming': return 'var(--warning)';
+                case 'completed': return 'var(--success)';
+                default: return 'var(--primary)';
+            }
+        }
+        
+        function setupBlogManagement() {
+            // Blog form toggle
+            document.getElementById('addBlogPostBtn').addEventListener('click', function() {
+                document.getElementById('blogForm').style.display = 'block';
+                document.getElementById('blogTitle').focus();
+            });
+            
+            document.getElementById('cancelBlogBtn').addEventListener('click', function() {
+                document.getElementById('blogForm').style.display = 'none';
+                document.getElementById('newBlogForm').reset();
+            });
+            
+            // New blog form submission
+            document.getElementById('newBlogForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = document.getElementById('blogTitle').value;
+                const author = document.getElementById('blogAuthor').value;
+                const content = document.getElementById('blogContent').value;
+                
+                const newBlogPost = {
+                    id: Date.now(),
+                    title: title,
+                    author: author,
+                    date: new Date().toISOString().split('T')[0],
+                    content: content,
+                    comments: []
+                };
+                
+                blogPosts.push(newBlogPost);
+                localStorage.setItem('pcea_blogPosts', JSON.stringify(blogPosts));
+                
+                loadBlogTable();
+                document.getElementById('blogForm').style.display = 'none';
+                document.getElementById('newBlogForm').reset();
+                
+                showAlert('loginAlerts', 'Blog post published successfully!', 'success');
+            });
+        }
+        
+        function loadBlogTable() {
+            const blogTable = document.getElementById('blogTable');
+            blogTable.innerHTML = '';
+            
+            if (blogPosts.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <i class="fas fa-blog" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #dee2e6;"></i>
+                        <h4>No blog posts yet</h4>
+                        <p>Create your first blog post to get started</p>
+                    </td>
+                `;
+                blogTable.appendChild(emptyRow);
+                return;
+            }
+            
+            blogPosts.forEach(post => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${post.title}</td>
+                    <td>${post.author}</td>
+                    <td>${formatDate(post.date)}</td>
+                    <td>${post.comments.length}</td>
+                    <td class="action-buttons">
+                        <button class="action-btn delete-btn" data-id="${post.id}" title="Delete blog post">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                blogTable.appendChild(row);
+            });
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const post = blogPosts.find(p => p.id === id);
+                    
+                    if (confirm(`Are you sure you want to delete blog post: "${post.title}"?`)) {
+                        blogPosts = blogPosts.filter(p => p.id !== id);
+                        localStorage.setItem('pcea_blogPosts', JSON.stringify(blogPosts));
+                        loadBlogTable();
+                        showAlert('loginAlerts', 'Blog post deleted successfully!', 'success');
+                    }
+                });
+            });
+        }
+        
+        function setupUserManagement() {
+            // Export users functionality
+            document.getElementById('exportUsersBtn').addEventListener('click', function() {
+                const csvContent = "data:text/csv;charset=utf-8," 
+                    + "Name,Email,Phone,Role,Registration Date\n"
+                    + users.map(user => 
+                        `"${user.name}","${user.email}","${user.phone}","${user.role}","${user.registrationDate}"`
+                    ).join("\n");
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "pcea_gatitu_users.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('loginAlerts', 'Users exported successfully!', 'success');
+            });
+        }
+        
+        function loadUsersTable() {
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = '';
+            
+            if (users.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #dee2e6;"></i>
+                        <h4>No users registered yet</h4>
+                        <p>User registrations will appear here</p>
+                    </td>
+                `;
+                usersTable.appendChild(emptyRow);
+                return;
+            }
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>
+                        <span style="display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; 
+                            background: ${user.role === 'admin' ? 'var(--accent)' : 'var(--primary)'}; color: white;">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.registrationDate)}</td>
+                    <td class="action-buttons">
+                        <button class="action-btn delete-btn" data-id="${user.id}" title="Delete user">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                usersTable.appendChild(row);
+            });
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const user = users.find(u => u.id === id);
+                    
+                    if (confirm(`Are you sure you want to delete user: ${user.name}?`)) {
+                        users = users.filter(u => u.id !== id);
+                        localStorage.setItem('pcea_users', JSON.stringify(users));
+                        loadUsersTable();
+                        loadDashboardData();
+                        showAlert('loginAlerts', 'User deleted successfully!', 'success');
+                    }
+                });
+            });
+        }
+        
+        function setupFinancialManagement() {
+            // Financial form submission
+            document.getElementById('updateFinanceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const offering = parseFloat(document.getElementById('offeringUpdate').value) || 0;
+                const donations = parseFloat(document.getElementById('donationsUpdate').value) || 0;
+                const expenses = parseFloat(document.getElementById('expensesUpdate').value) || 0;
+                
+                finances = {
+                    offering: offering,
+                    donations: donations,
+                    expenses: expenses
+                };
+                
+                localStorage.setItem('pcea_finances', JSON.stringify(finances));
+                loadFinancialData();
+                
+                showAlert('loginAlerts', 'Financial records updated successfully!', 'success');
+                document.getElementById('updateFinanceForm').reset();
+            });
+        }
+        
+        function loadFinancialData() {
+            const offeringAmount = finances.offering || 0;
+            const donationsAmount = finances.donations || 0;
+            const expensesAmount = finances.expenses || 0;
+            const availableFunds = offeringAmount + donationsAmount - expensesAmount;
+            
+            document.getElementById('offeringAmount').textContent = `KSh ${offeringAmount.toLocaleString()}`;
+            document.getElementById('donationsAmount').textContent = `KSh ${donationsAmount.toLocaleString()}`;
+            document.getElementById('expensesAmount').textContent = `KSh ${expensesAmount.toLocaleString()}`;
+            document.getElementById('availableFunds').textContent = `KSh ${availableFunds.toLocaleString()}`;
+            
+            // Pre-fill form fields
+            document.getElementById('offeringUpdate').value = offeringAmount;
+            document.getElementById('donationsUpdate').value = donationsAmount;
+            document.getElementById('expensesUpdate').value = expensesAmount;
+        }
+        
+        function loadGalleryPhotos() {
+            const churchGallery = document.getElementById('churchGalleryAdmin');
+            const tripsGallery = document.getElementById('tripsGalleryAdmin');
+            
+            churchGallery.innerHTML = '';
+            tripsGallery.innerHTML = '';
+            
+            // Load church photos
+            if (churchPhotos.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.style.gridColumn = '1 / -1';
+                emptyState.innerHTML = `
+                    <i class="fas fa-images"></i>
+                    <h4>No church photos yet</h4>
+                    <p>Upload church photos to get started</p>
+                `;
+                churchGallery.appendChild(emptyState);
+            } else {
+                churchPhotos.forEach(photo => {
+                    const galleryItem = createGalleryItem(photo, 'church');
+                    churchGallery.appendChild(galleryItem);
+                });
+            }
+            
+            // Load trip photos
+            if (tripPhotos.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.style.gridColumn = '1 / -1';
+                emptyState.innerHTML = `
+                    <i class="fas fa-images"></i>
+                    <h4>No trip photos yet</h4>
+                    <p>Upload trip photos to get started</p>
+                `;
+                tripsGallery.appendChild(emptyState);
+            } else {
+                tripPhotos.forEach(photo => {
+                    const galleryItem = createGalleryItem(photo, 'trips');
+                    tripsGallery.appendChild(galleryItem);
+                });
+            }
+        }
+        
+        function createGalleryItem(photo, type) {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            const img = document.createElement('img');
+            img.src = photo.url;
+            img.alt = photo.alt;
+            img.loading = 'lazy';
+            
+            const actions = document.createElement('div');
+            actions.className = 'gallery-actions';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'action-btn delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.title = 'Delete photo';
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (confirm('Are you sure you want to delete this photo?')) {
+                    if (type === 'church') {
+                        churchPhotos = churchPhotos.filter(p => p.id !== photo.id);
+                        localStorage.setItem('pcea_churchPhotos', JSON.stringify(churchPhotos));
+                    } else {
+                        tripPhotos = tripPhotos.filter(p => p.id !== photo.id);
+                        localStorage.setItem('pcea_tripPhotos', JSON.stringify(tripPhotos));
+                    }
+                    galleryItem.remove();
+                    loadDashboardData();
+                    loadGalleryPhotos();
+                    showAlert('loginAlerts', 'Photo deleted successfully!', 'success');
+                }
+            });
+            
+            actions.appendChild(deleteBtn);
+            galleryItem.appendChild(img);
+            galleryItem.appendChild(actions);
+            
+            return galleryItem;
+        }
+        
+        function setupPhotoUpload() {
+            const uploadChurchBtn = document.getElementById('uploadChurchPhotosBtn');
+            const uploadTripsBtn = document.getElementById('uploadTripPhotosBtn');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            let currentGallery = 'church';
+            
+            uploadChurchBtn.addEventListener('click', function() {
+                currentGallery = 'church';
+                uploadArea.style.display = 'block';
+                fileInput.click();
+            });
+            
+            uploadTripsBtn.addEventListener('click', function() {
+                currentGallery = 'trips';
+                uploadArea.style.display = 'block';
+                fileInput.click();
+            });
+            
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--primary)';
+                uploadArea.style.backgroundColor = '#e3f2fd';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.borderColor = '#ccc';
+                uploadArea.style.backgroundColor = '#f8f9fa';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ccc';
+                uploadArea.style.backgroundColor = '#f8f9fa';
+                handleFiles(e.dataTransfer.files, currentGallery);
+            });
+            
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files, currentGallery);
+            });
+            
+            function handleFiles(files, galleryType) {
+                if (files.length === 0) return;
+                
+                let processedFiles = 0;
+                const totalFiles = files.length;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const newPhoto = {
+                                id: Date.now() + i,
+                                url: e.target.result,
+                                alt: `Church ${galleryType} photo`,
+                                uploadDate: new Date().toISOString()
+                            };
+                            
+                            if (galleryType === 'church') {
+                                churchPhotos.push(newPhoto);
+                                localStorage.setItem('pcea_churchPhotos', JSON.stringify(churchPhotos));
+                                
+                                const galleryItem = createGalleryItem(newPhoto, 'church');
+                                document.getElementById('churchGalleryAdmin').appendChild(galleryItem);
+                            } else {
+                                tripPhotos.push(newPhoto);
+                                localStorage.setItem('pcea_tripPhotos', JSON.stringify(tripPhotos));
+                                
+                                const galleryItem = createGalleryItem(newPhoto, 'trips');
+                                document.getElementById('tripsGalleryAdmin').appendChild(galleryItem);
+                            }
+                            
+                            processedFiles++;
+                            if (processedFiles === totalFiles) {
+                                loadDashboardData();
+                                showAlert('loginAlerts', `${totalFiles} photos uploaded successfully!`, 'success');
+                                uploadArea.style.display = 'none';
+                                fileInput.value = '';
+                            }
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    } else {
+                        processedFiles++;
+                        if (processedFiles === totalFiles) {
+                            showAlert('loginAlerts', 'Some files were skipped (only images are supported).', 'error');
+                            uploadArea.style.display = 'none';
+                            fileInput.value = '';
+                        }
+                    }
+                }
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+    </script>
+</body>
+</html>
